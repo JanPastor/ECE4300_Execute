@@ -1,0 +1,16 @@
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/janne-laptop/Downloads/ECE4300_Execute/ECE4300_Execute.srcs/sources_1/new/adder.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module adder
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/janne-laptop/Downloads/ECE4300_Execute/ECE4300_Execute.srcs/sources_1/new/alu.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module alu
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/janne-laptop/Downloads/ECE4300_Execute/ECE4300_Execute.srcs/sources_1/new/alu_control.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module alu_control
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/janne-laptop/Downloads/ECE4300_Execute/ECE4300_Execute.srcs/sources_1/new/bottom_mux.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module bottom_mux
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/janne-laptop/Downloads/ECE4300_Execute/ECE4300_Execute.srcs/sources_1/new/ex_mem.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module ex_mem
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/janne-laptop/Downloads/ECE4300_Execute/ECE4300_Execute.srcs/sources_1/new/execute.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module execute
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/janne-laptop/Downloads/ECE4300_Execute/ECE4300_Execute.srcs/sim_1/new/executeTB.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module executeTB
+INFO: [VRFC 10-2263] Analyzing Verilog file "C:/Users/janne-laptop/Downloads/ECE4300_Execute/ECE4300_Execute.sim/sim_1/behav/xsim/glbl.v" into library xil_defaultlib
+INFO: [VRFC 10-311] analyzing module glbl
