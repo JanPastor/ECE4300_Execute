@@ -14,24 +14,45 @@ The design implements the Execute (EX) stage, integrating an Arithmetic Logic Un
 - **`bottom_mux.v`**: Chooses the destination register (`rd` or `rt`) depending on the `regdst` control signal.
 - **`ex_mem.v`**: Pipeline registers capturing and synchronizing signals out of the Execute stage.
 
-## Testbench Test Cases
-
-The testbench (`executeTB.v`) validates the Execute stage's core functionalities by simulating an R-type and I-type instruction.
-
-### Test Case 1: R-Type ADD Instruction (`ADD $3, $1, $2`)
-In this test case, the execute stage is verified for a register-to-register addition.
-- **Input values**: `$rs` (`rdata1`) holds the value `15`, and `$rt` (`rdata2`) holds the value `25`.
-- **Destination Register**: Controlled by `regdst = 1` and `instr_1511` to select the `$rd` address (`5'd3`).
-- **ALU Setup**: `alu_op = 2'b10`, `funct = 6'b100000` configure the ALU for addition. `alusrc = 0` sets the second ALU input to the `$rt` register content (`rdata2`).
-- **Expected Result**: The ALU computes `15 + 25 = 40`, driving `alu_result_out`. The `ex_mem` latch transfers this payload to the Memory stage.
-
-### Test Case 2: I-Type LW Instruction (`LW $4, 8($1)`)
-This test case targets base+offset memory address calculation typical of a Load Word operation.
-- **Addressing Address Calculation**: `$rs` holds the base address while `s_extend` holds the offset (`8`).
-- **Instruction specific signals**: `alusrc = 1` forces the ALU to take the 32-bit sign-extended immediate (`s_extend = 8`) instead of the register value. `alu_op = 2'b00` directs the ALU to perform addition for memory location calculation.
-- **Destination Register**: Set by `regdst = 0`, selecting `instr_2016` (`$rt` register `5'd4`) to store the loaded data downstream.
-- **Expected Result**: The final address is resolved, passing correctly along with the value needed to store data onto `alu_result_out`.
-
-## Simulation Timing Diagram
+## Simulation Timing Diagram and Test Cases
 
 ![Simulation Timeline](executeTB_waveform.png)
+
+Your simulation waveform looks fantastic! It perfectly demonstrates the synchronous behavior of a pipelined processor. Notice how the inputs change mid-cycle, but the outputs only "snap" to their new values on the rising edge of the clk.
+
+Here is the breakdown of the two test cases appearing in your results.
+
+### Test Case 1: R-Type Instruction (ADD)
+**Timing Window:** 10ns to 30ns (Calculations) -> 30ns (Latched Output)  
+In this scenario, the CPU is performing an arithmetic operation using two registers (15 + 25).
+
+#### The Inputs (The "Set-up")
+* **Registers:** `rdata1` (Index 5) is 15 and `rdata2` (Index 6) is 25.
+* **ALU Choice:** `alusrc` (Index 12) is 0, telling the Mux to pick the register value (25) instead of the immediate value (4).
+* **The Operation:** `alu_op` (Index 10) is -2 (which is binary 10 for R-type) and `funct` (Index 11) is -32 (binary 100000 for ADD).
+* **Destination:** `regdst` (Index 13) is 1, selecting `instr_1511` (Index 9) which is register 3 as the destination.
+
+#### The Results (At the 30ns Clock Tick)
+* **ALU Result:** `alu_result_out` (Index 17) updates to 40 (15 + 25).
+* **Branch Adder:** `adder_out` (Index 16) updates to 104 (100 + 4).
+* **Destination Register:** `muxout_out` (Index 19) locks in as register 3.
+
+### Test Case 2: I-Type Instruction (Load Word/Immediate)
+**Timing Window:** 30ns to 50ns (Calculations) -> 50ns (Latched Output)  
+Here, the CPU switches to logic used for memory access or "Add Immediate." It calculates an address by adding a register to a constant offset (15 + 8).
+
+#### The Inputs (The "Change")
+* **The Switch:** `alusrc` (Index 12) flips to 1. This tells the ALU: "Ignore register 2, use the `s_extend` value instead".
+* **Immediate Value:** `s_extend` (Index 7) has updated to 8.
+* **The Operation:** `alu_op` (Index 10) changes to 0 (binary 00), which defaults the ALU to "Addition" for address calculation.
+* **New Destination:** `regdst` (Index 13) flips to 0, selecting `instr_2016` (Index 8) which is register 4 as the destination.
+
+#### The Results (At the 50ns Clock Tick)
+* **ALU Result:** `alu_result_out` (Index 17) transitions to 23 (15 from register + 8 from immediate).
+* **Branch Adder:** `adder_out` (Index 16) updates to 108 (100 + 8).
+* **Destination Register:** `muxout_out` (Index 19) updates to register 4.
+
+### Why this waveform proves your code is correct:
+* **Synchronization:** Look at `alu_result_out` (Index 17). Even though the inputs for the second test case were ready at 35ns, the output didn't change until the clock edge at 50ns. This proves your `ex_mem` latch is working perfectly.
+* **Mux Logic:** The fact that the result changed from 40 to 23 proves your `alusrc` mux is correctly choosing between the register and the immediate value.
+* **Math Accuracy:** Your ALU correctly handled both a standard addition and an address offset addition.
