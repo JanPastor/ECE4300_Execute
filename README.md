@@ -18,10 +18,6 @@ The design implements the Execute (EX) stage, integrating an Arithmetic Logic Un
 
 ![Simulation Timeline](executeTB_waveform.png)
 
-Your simulation waveform looks fantastic! It perfectly demonstrates the synchronous behavior of a pipelined processor. Notice how the inputs change mid-cycle, but the outputs only "snap" to their new values on the rising edge of the clk.
-
-Here is the breakdown of the two test cases appearing in your results.
-
 ### Test Case 1: R-Type Instruction (ADD)
 **Timing Window:** 10ns to 30ns (Calculations) -> 30ns (Latched Output)  
 In this scenario, the CPU is performing an arithmetic operation using two registers (15 + 25).
@@ -52,7 +48,3 @@ Here, the CPU switches to logic used for memory access or "Add Immediate." It ca
 * **Branch Adder:** `adder_out` (Index 16) updates to 108 (100 + 8).
 * **Destination Register:** `muxout_out` (Index 19) updates to register 4.
 
-### Why this waveform proves your code is correct:
-* **Synchronization:** Look at `alu_result_out` (Index 17). Even though the inputs for the second test case were ready at 35ns, the output didn't change until the clock edge at 50ns. This proves your `ex_mem` latch is working perfectly.
-* **Mux Logic:** The fact that the result changed from 40 to 23 proves your `alusrc` mux is correctly choosing between the register and the immediate value.
-* **Math Accuracy:** Your ALU correctly handled both a standard addition and an address offset addition.
