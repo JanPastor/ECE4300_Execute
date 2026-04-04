@@ -19,32 +19,16 @@ The design implements the Execute (EX) stage, integrating an Arithmetic Logic Un
 ![Simulation Timeline](executeTB_waveform.png)
 
 ### Test Case 1: R-Type Instruction (ADD)
-**Timing Window:** 10ns to 30ns (Calculations) -> 30ns (Latched Output)  
-In this scenario, the CPU is performing an arithmetic operation using two registers (15 + 25).
+**Timing:** 10ns to 30ns  
+The CPU computes an addition using two registers ($15 + 25$).
 
-#### The Inputs (The "Set-up")
-* **Registers:** `rdata1` (Index 5) is 15 and `rdata2` (Index 6) is 25.
-* **ALU Choice:** `alusrc` (Index 12) is 0, telling the Mux to pick the register value (25) instead of the immediate value (4).
-* **The Operation:** `alu_op` (Index 10) is -2 (which is binary 10 for R-type) and `funct` (Index 11) is -32 (binary 100000 for ADD).
-* **Destination:** `regdst` (Index 13) is 1, selecting `instr_1511` (Index 9) which is register 3 as the destination.
-
-#### The Results (At the 30ns Clock Tick)
-* **ALU Result:** `alu_result_out` (Index 17) updates to 40 (15 + 25).
-* **Branch Adder:** `adder_out` (Index 16) updates to 104 (100 + 4).
-* **Destination Register:** `muxout_out` (Index 19) locks in as register 3.
+- **Setup:** Inputs `rdata1=15` and `rdata2=25` are provided. The signal `alusrc=0` passes the value in `rdata2` to the ALU. `alu_op=10` (R-type) and `funct=32` (ADD) configure the ALU for addition. The destination register is set to `3` (`regdst=1` selecting `instr_1511`).
+- **Result (at 30ns):** The ALU successfully computes `40` (`alu_result_out`). The branch adder computes `104` (`adder_out`), and the destination register `3` is securely latched (`muxout_out`).
 
 ### Test Case 2: I-Type Instruction (Load Word/Immediate)
-**Timing Window:** 30ns to 50ns (Calculations) -> 50ns (Latched Output)  
-Here, the CPU switches to logic used for memory access or "Add Immediate." It calculates an address by adding a register to a constant offset (15 + 8).
+**Timing:** 30ns to 50ns  
+The CPU calculates a memory address by adding a register to a constant offset ($15 + 8$).
 
-#### The Inputs (The "Change")
-* **The Switch:** `alusrc` (Index 12) flips to 1. This tells the ALU: "Ignore register 2, use the `s_extend` value instead".
-* **Immediate Value:** `s_extend` (Index 7) has updated to 8.
-* **The Operation:** `alu_op` (Index 10) changes to 0 (binary 00), which defaults the ALU to "Addition" for address calculation.
-* **New Destination:** `regdst` (Index 13) flips to 0, selecting `instr_2016` (Index 8) which is register 4 as the destination.
-
-#### The Results (At the 50ns Clock Tick)
-* **ALU Result:** `alu_result_out` (Index 17) transitions to 23 (15 from register + 8 from immediate).
-* **Branch Adder:** `adder_out` (Index 16) updates to 108 (100 + 8).
-* **Destination Register:** `muxout_out` (Index 19) updates to register 4.
+- **Setup:** `alusrc=1` switches the ALU to accept the immediate value `s_extend=8`. `alu_op=0` sets the ALU logic to addition for address calculation. The destination changes to register `4` (`regdst=0` selecting `instr_2016`).
+- **Result (at 50ns):** The calculated memory address is `23` (`alu_result_out`). The branch adder outputs `108` (`adder_out`), and the destination register updates to `4` (`muxout_out`).
 
